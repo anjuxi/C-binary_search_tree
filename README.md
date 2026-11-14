@@ -1,312 +1,177 @@
 # Binary Search Tree in C
 
-[![C](https://img.shields.io/badge/C-11-blue.svg)](https://en.wikipedia.org/wiki/C11_(C_standard_revision))
+[中文说明](README.zh-CN.md)
+
+[![C11](https://img.shields.io/badge/C-11-blue.svg)](https://en.wikipedia.org/wiki/C11_(C_standard_revision))
+[![GCC](https://img.shields.io/badge/GCC-supported-orange.svg)](https://gcc.gnu.org/)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-green.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Overview
+## Project Overview
 
-A binary search tree (BST) library in C. Insert, delete, and lookup run in O(log n) on average.
+This project is a learning-oriented binary search tree implementation that can also be compiled directly into another C project. It uses C11 and focuses on node memory management, the three deletion cases, ordered traversal, and boundary handling.
 
-## Features
+This is an ordinary binary search tree, not an AVL or red-black tree. Duplicate values are rejected, and the tree does not rebalance itself. `Data` is currently defined as `int` in `tree.h`.
 
-- **Create and destroy** — allocate and free the tree safely
-- **Insert and delete** — delete handles leaf nodes, nodes with one child, and nodes with two children
-- **Lookup** — find a node, check membership, get the min/max
-- **Traversal**:
-  - Pre-order
-  - In-order
-  - Post-order
-- **Tree printing** — visualizes the tree structure
-- **Other operations** — height, leaf count, clear
+Features:
 
-## Data Structure
+- Create, clear, and destroy trees.
+- Insert and remove nodes while maintaining the node count.
+- Find nodes and read minimum or maximum values.
+- Pre-order, in-order, and post-order traversal, plus tree printing.
+- Query the height, node count, and leaf count.
+- Check common operations and edge cases with a separate test program.
 
-```c
-// Tree node
-typedef struct TreeNode {
-    Data data;              // node data
-    struct TreeNode* left;  // left child
-    struct TreeNode* right; // right child
-} TreeNode;
-
-// Tree
-typedef struct {
-    TreeNode* root;         // root node
-    int size;               // node count
-} Tree;
-```
-
-## API
-
-### Create and destroy
-
-| Function | Description |
-| -------------------------------------- | -------------------- |
-| `Tree* treeCreate(void)` | Create an empty tree |
-| `void treeDestroy(Tree* t)` | Destroy the tree and free memory |
-| `void treeNodeDestroy(TreeNode* node)` | Recursively destroy nodes |
-
-### Insert and delete
-
-| Function | Description |
-| ------------------------------------ | ------------------------------ |
-| `bool treeInsert(Tree* t, Data val)` | Insert a value (no duplicates allowed) |
-| `bool treeRemove(Tree* t, Data val)` | Remove a value |
-
-### Lookup
-
-| Function | Description |
-| --------------------------------------- | ------------------ |
-| `TreeNode* treeFind(Tree* t, Data val)` | Find the node holding a value |
-| `bool treeContains(Tree* t, Data val)` | Check membership |
-| `Data treeMin(Tree* t)` | Get the minimum value |
-| `Data treeMax(Tree* t)` | Get the maximum value |
-
-### Traversal
-
-| Function | Description |
-| ----------------------------- | -------------------------- |
-| `void treePreOrder(Tree* t)` | Pre-order traversal |
-| `void treeInOrder(Tree* t)` | In-order traversal (sorted ascending) |
-| `void treePostOrder(Tree* t)` | Post-order traversal |
-
-### Other operations
-
-| Function | Description |
-| ------------------------------ | -------------------- |
-| `bool treeIsEmpty(Tree* t)` | Check whether the tree is empty |
-| `int treeSize(Tree* t)` | Get the node count |
-| `void treeClear(Tree* t)` | Clear the tree (keep the tree object) |
-| `int treeHeight(Tree* t)` | Get the tree height |
-| `int treeCountLeaves(Tree* t)` | Count leaf nodes |
-| `void treePrint(Tree* t)` | Print the tree as a tree structure |
-
-## Build and Run
-
-```bash
-gcc -o tree tree.c
-./tree
-```
-
-Use your actual source filename if it differs from `tree.c`.
-
-## Example
-
-```c
-int main() {
-    printf("=== Binary Search Tree Test ===\n\n");
-
-    // Create the tree
-    Tree* t = treeCreate();
-    printf("Create tree:\n");
-    treePrint(t);
-
-    // Insert nodes
-    printf("Insert 50, 30, 70, 20, 40, 60, 80:\n");
-    treeInsert(t, 50);
-    treeInsert(t, 30);
-    treeInsert(t, 70);
-    treeInsert(t, 20);
-    treeInsert(t, 40);
-    treeInsert(t, 60);
-    treeInsert(t, 80);
-    treePrint(t);
-
-    // Traversal
-    printf("Traversal:\n");
-    treePreOrder(t);
-    treeInOrder(t);
-    treePostOrder(t);
-    printf("\n");
-
-    // Lookup
-    printf("Lookup:\n");
-    printf("Contains 40: %s\n", treeContains(t, 40) ? "yes" : "no");
-    printf("Contains 100: %s\n", treeContains(t, 100) ? "yes" : "no");
-    printf("Min: %d\n", treeMin(t));
-    printf("Max: %d\n", treeMax(t));
-    printf("\n");
-
-    // Height and leaf count
-    printf("Height: %d\n", treeHeight(t));
-    printf("Leaf count: %d\n", treeCountLeaves(t));
-    printf("\n");
-
-    // Delete a leaf
-    printf("Delete leaf 20:\n");
-    treeRemove(t, 20);
-    treePrint(t);
-    treeInOrder(t);
-    printf("\n");
-
-    // Delete a node with one child
-    printf("Delete a node with one child (insert 25, then delete 30):\n");
-    treeInsert(t, 25);
-    treePrint(t);
-    treeRemove(t, 30);
-    treePrint(t);
-    treeInOrder(t);
-    printf("\n");
-
-    // Delete a node with two children
-    printf("Delete node 50, which has two children:\n");
-    treeRemove(t, 50);
-    treePrint(t);
-    treeInOrder(t);
-    printf("\n");
-
-    // Clear the tree
-    printf("Clear tree:\n");
-    treeClear(t);
-    treePrint(t);
-
-    // Re-insert
-    printf("Insert 100, 50, 150, 25, 75, 125, 175:\n");
-    treeInsert(t, 100);
-    treeInsert(t, 50);
-    treeInsert(t, 150);
-    treeInsert(t, 25);
-    treeInsert(t, 75);
-    treeInsert(t, 125);
-    treeInsert(t, 175);
-    treePrint(t);
-
-    // Destroy
-    treeDestroy(t);
-    printf("Tree destroyed\n");
-
-    return 0;
-}
-```
-
-## Sample Output
-
-```bash
-C:\Users\anjuxi\Desktop\tree>a.exe
-=== Binary Search Tree Test ===
-
-Create tree:
-Empty tree (size=0)
-Insert 50, 30, 70, 20, 40, 60, 80:
-
-Tree structure (size=7):
-        80
-    70
-        60
-50
-        40
-    30
-        20
-
-Traversal:
-Pre-order: 50 30 20 40 70 60 80
-In-order: 20 30 40 50 60 70 80
-Post-order: 20 40 30 60 80 70 50
-
-Lookup:
-Contains 40: yes
-Contains 100: no
-Min: 20
-Max: 80
-
-Height: 3
-Leaf count: 4
-
-Delete leaf 20:
-
-Tree structure (size=6):
-        80
-    70
-        60
-50
-        40
-    30
-
-In-order: 30 40 50 60 70 80
-
-Delete a node with one child (insert 25, then delete 30):
-
-Tree structure (size=7):
-        80
-    70
-        60
-50
-        40
-    30
-        25
-
-
-Tree structure (size=6):
-        80
-    70
-        60
-50
-    40
-        25
-
-In-order: 25 40 50 60 70 80
-
-Delete node 50, which has two children:
-
-Tree structure (size=5):
-        80
-    70
-60
-    40
-        25
-
-In-order: 25 40 60 70 80
-
-Clear tree:
-Empty tree (size=0)
-Insert 100, 50, 150, 25, 75, 125, 175:
-
-Tree structure (size=7):
-        175
-    150
-        125
-100
-        75
-    50
-        25
-
-Tree destroyed
+```mermaid
+flowchart LR
+    A["Include tree.h"] --> B["Compile tree.c with your program"]
+    B --> C["Create an empty tree"]
+    C --> D["Insert, find, remove, or traverse"]
+    D --> E["Clear and reuse, or destroy"]
 ```
 
 ## Dependencies
 
-Only the C standard library:
+- **C compiler**: C11 support is required; GCC is used for development and testing.
+- **Python 3.9+**: Only needed for `test_tree.py`; no third-party Python packages are used.
+- **C standard library**: The library uses `stdbool.h`, `stdio.h`, and `stdlib.h`; the tests also use `assert.h`.
 
-[![C Standard Library](https://img.shields.io/badge/C%20Standard%20Library-stdio.h-blue.svg)]()
-[![C Standard Library](https://img.shields.io/badge/C%20Standard%20Library-stdlib.h-blue.svg)]()
-[![C Standard Library](https://img.shields.io/badge/C%20Standard%20Library-stdbool.h-blue.svg)]()
+## Project Structure
 
-- `stdio.h` — input/output
-- `stdlib.h` — memory allocation (malloc/free)
-- `stdbool.h` — boolean type
+All files live in the project root. No separate source or build directories are required.
 
-## Complexity
+```text
+.
+├── tree.h           Public types and function declarations
+├── tree.c           Binary search tree implementation
+├── demo.c           Demo program
+├── test_tree.c      Assertion tests
+├── test_tree.py     Compile and run the tests and demo
+├── README.md        Main English documentation
+├── README.zh-CN.md  Chinese documentation
+├── LICENSE          MIT license
+└── .gitignore       Local build artifact exclusions
+```
 
-| Operation | Average | Worst case | Space |
-| ---- | -------------- | -------------- | ---------- |
+## Usage
+
+### 1. Integrate with your program
+
+Include `tree.h` in your source and compile `tree.c` with your program.
+
+```c
+#include <stdio.h>
+#include "tree.h"
+
+int main(void) {
+    Tree* tree = treeCreate();
+    if (!tree) {
+        return 1;
+    }
+
+    treeInsert(tree, 0);
+    treeInsert(tree, -10);
+    treeInsert(tree, 10);
+
+    Data minValue;
+    if (treeMin(tree, &minValue)) {
+        printf("Minimum: %d\n", minValue);
+    }
+
+    treeDestroy(tree);
+    return 0;
+}
+```
+
+If the file is named `your_program.c`, run this command from the project root:
+
+```bash
+gcc -std=c11 tree.c your_program.c -o your_program
+```
+
+Adjust the source paths if you copy the files elsewhere. Use the API instead of modifying `root` or `size` directly, since manual changes can break the tree structure or node count.
+
+### 2. Build and run the demo
+
+On Windows:
+
+```powershell
+gcc -std=c11 -Wall -Wextra -Wpedantic tree.c demo.c -o tree_demo.exe
+.\tree_demo.exe
+```
+
+On macOS or Linux:
+
+```bash
+gcc -std=c11 -Wall -Wextra -Wpedantic tree.c demo.c -o tree_demo
+./tree_demo
+```
+
+The demo covers insertion, traversal, lookup, deletion, clearing, and destruction.
+
+### 3. Run the tests
+
+```bash
+python test_tree.py
+```
+
+The script compiles the test and demo programs separately with:
+
+```text
+-std=c11 -Wall -Wextra -Wpedantic -Werror
+```
+
+Executables are created in the system temporary directory and removed afterward. Tests cover `NULL`, empty trees, stored zeroes, duplicate insertion, failed lookup, leaf removal, one-child removal, two-child removal, root removal, and reuse after clearing.
+
+### 4. Public API
+
+| Function | Description |
+| --- | --- |
+| `Tree* treeCreate(void)` | Create an empty tree; return `NULL` on allocation failure. |
+| `void treeDestroy(Tree* t)` | Destroy a tree; `NULL` is accepted. |
+| `bool treeInsert(Tree* t, Data value)` | Insert a new value; reject duplicates and allocation failures. |
+| `bool treeRemove(Tree* t, Data value)` | Remove a value; return `false` when it is absent. |
+| `TreeNode* treeFind(const Tree* t, Data value)` | Find a node or return `NULL`. |
+| `bool treeContains(const Tree* t, Data value)` | Check whether a value exists. |
+| `bool treeMin(const Tree* t, Data* outValue)` | Read the minimum through an output parameter. |
+| `bool treeMax(const Tree* t, Data* outValue)` | Read the maximum through an output parameter. |
+| `bool treeIsEmpty(const Tree* t)` | Check whether the tree is empty. |
+| `int treeSize(const Tree* t)` | Return the node count. |
+| `void treeClear(Tree* t)` | Remove all nodes but keep the tree object. |
+| `void treePreOrder(const Tree* t)` | Print a pre-order traversal. |
+| `void treeInOrder(const Tree* t)` | Print an in-order traversal in ascending order. |
+| `void treePostOrder(const Tree* t)` | Print a post-order traversal. |
+| `void treePrint(const Tree* t)` | Print the tree with horizontal indentation. |
+| `int treeHeight(const Tree* t)` | Return the height; an empty tree is 0 and a leaf is 1. |
+| `int treeCountLeaves(const Tree* t)` | Return the leaf count. |
+
+The output parameter of `treeMin` or `treeMax` is valid only when the function returns `true`, so an empty tree is not confused with a stored value of 0.
+
+### 5. Complexity
+
+| Operation | Average time | Worst time | Extra space |
+| --- | --- | --- | --- |
 | Insert | O(log n) | O(n) | O(1) |
-| Delete | O(log n) | O(n) | O(1) |
+| Remove | O(log n) | O(n) | O(h) |
 | Lookup | O(log n) | O(n) | O(1) |
 | Traversal | O(n) | O(n) | O(h) |
+| Height and leaf count | O(n) | O(n) | O(h) |
 
-> h = tree height, n = node count
+Here, `n` is the node count and `h` is the tree height. Insertion and lookup are iterative; removal, traversal, and statistics are recursive. A degenerate tree has height `n`, and recursive operations need the corresponding call-stack space.
 
-## Author
+## Contributing
 
-**Dr. Ailan Anjuxi (谙弆悕)**
+1. Fork the repository and create a branch for your change.
+2. Keep the code compatible with C11 and avoid platform-specific extensions.
+3. Add assertions for behavior changes and run `python test_tree.py`.
+4. Do not commit executables, object files, or caches.
+5. Explain the reason for the change and the test result in your pull request. Opening an issue first is also welcome.
+
+## Contact
+
+**Ailan Anjuxi (谙弆悕博士)**
 
 - Email: [anjuxi.ME@outlook.com](mailto:anjuxi.ME@outlook.com)
 - SIP: [sip:anjuxi@sip.linphone.org](sip:anjuxi@sip.linphone.org)
 
-## License
-
-MIT — see [LICENSE](LICENSE) for details.
-
----
-
-*This project is for learning and teaching. Discussion is welcome.*
+Licensed under the [MIT License](LICENSE).

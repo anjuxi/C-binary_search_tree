@@ -1,0 +1,6 @@
+*.o
+*.exe
+tree_demo
+your_program
+__pycache__/
+*.py[cod]
